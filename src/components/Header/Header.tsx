@@ -6,7 +6,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors, FontSize, FontWeight, Spacing, BorderRadius } from '../../constants';
+import { FontSize, FontWeight, Spacing, BorderRadius } from '../../constants';
+import { useTheme } from '../../store/ThemeContext';
 
 interface HeaderProps {
   title: string;
@@ -25,6 +26,9 @@ const Header: React.FC<HeaderProps> = ({
   rightIcon,
   onRightPress,
 }) => {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
+
   const renderRight = () => {
     if (avatarInitials) {
       return (
@@ -39,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({
           onPress={onRightPress}
           style={styles.rightButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Icon name={rightIcon} size={24} color={Colors.textPrimary} />
+          <Icon name={rightIcon} size={24} color={colors.textPrimary} />
         </TouchableOpacity>
       );
     }
@@ -52,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({
         onPress={onMenuPress}
         style={styles.menuButton}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-        <Icon name="menu" size={26} color={Colors.textPrimary} />
+        <Icon name="menu" size={26} color={colors.textPrimary} />
       </TouchableOpacity>
 
       <View style={styles.titleBlock}>
@@ -71,17 +75,17 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.base,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: colors.backgroundWhite,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: colors.borderLight,
     elevation: 2,
-    shadowColor: Colors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
@@ -96,26 +100,26 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSize.xl,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     lineHeight: 26,
   },
   subtitle: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     marginTop: 1,
   },
   avatarButton: {
     width: 38,
     height: 38,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
     fontSize: FontSize.sm,
     fontWeight: FontWeight.bold,
-    color: Colors.textWhite,
+    color: colors.textWhite,
     letterSpacing: 0.5,
   },
   rightButton: {

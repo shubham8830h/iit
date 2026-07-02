@@ -9,19 +9,20 @@
  *  5. Stats Grid — 2×2 color-coded stat cards
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Modal,
+  FlatList,
 } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  Colors,
   FontSize,
   FontWeight,
   Spacing,
@@ -29,6 +30,7 @@ import {
 } from '../../constants';
 import { Header } from '../../components';
 import { useAuth } from '../../store/AuthContext';
+import { useTheme } from '../../store/ThemeContext';
 
 // ─── Mock data (replace with API later) ──────────────────────────────────────
 
@@ -131,7 +133,10 @@ const STATS_DATA = [
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 /** Section 1: Level card */
-const LevelCard = () => (
+const LevelCard = () => {
+  const { colors } = useTheme();
+  const levelStyles = getLevelStyles(colors);
+  return (
   <View style={levelStyles.card}>
     <View style={levelStyles.circle}>
       <Text style={levelStyles.circleNumber}>{LEVEL_DATA.current}</Text>
@@ -142,9 +147,10 @@ const LevelCard = () => (
       <Text style={levelStyles.sparksToNext}>{LEVEL_DATA.sparksToNext} Sparks to next</Text>
     </View>
   </View>
-);
+  );
+};
 
-const levelStyles = StyleSheet.create({
+const getLevelStyles = (colors: any) => StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -158,16 +164,16 @@ const levelStyles = StyleSheet.create({
     height: 52,
     borderRadius: BorderRadius.full,
     borderWidth: 3,
-    borderColor: Colors.activeBlue,
+    borderColor: colors.activeBlue,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.base,
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: colors.backgroundWhite,
   },
   circleNumber: {
     fontSize: FontSize.xl,
     fontWeight: FontWeight.bold,
-    color: Colors.activeBlue,
+    color: colors.activeBlue,
   },
   info: {
     flex: 1,
@@ -175,24 +181,27 @@ const levelStyles = StyleSheet.create({
   levelLabel: {
     fontSize: FontSize.xs,
     fontWeight: FontWeight.semiBold,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     letterSpacing: 1,
   },
   levelValue: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginTop: 1,
   },
   sparksToNext: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
 });
 
 /** Section 2: Sparks This Week + Streak */
-const SparksStreakCard = () => (
+const SparksStreakCard = () => {
+  const { colors } = useTheme();
+  const sparksStyles = getSparksStyles(colors);
+  return (
   <View style={sparksStyles.card}>
     <View style={sparksStyles.headerRow}>
       <View style={sparksStyles.labelBadge}>
@@ -231,16 +240,17 @@ const SparksStreakCard = () => (
       </View>
     </View>
   </View>
-);
+  );
+};
 
-const sparksStyles = StyleSheet.create({
+const getSparksStyles = (colors: any) => StyleSheet.create({
   card: {
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: colors.backgroundWhite,
     borderRadius: BorderRadius.xl,
     padding: Spacing.base,
     marginBottom: Spacing.md,
     elevation: 2,
-    shadowColor: Colors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -266,22 +276,22 @@ const sparksStyles = StyleSheet.create({
   labelText: {
     fontSize: FontSize.xs,
     fontWeight: FontWeight.bold,
-    color: Colors.activeBlue,
+    color: colors.activeBlue,
     letterSpacing: 0.5,
   },
   historyLink: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
+    color: colors.textMuted,
   },
   sparksValue: {
     fontSize: 44,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     lineHeight: 52,
   },
   progressTrack: {
     height: 8,
-    backgroundColor: Colors.borderLight,
+    backgroundColor: colors.borderLight,
     borderRadius: BorderRadius.full,
     overflow: 'hidden',
     marginTop: Spacing.xs,
@@ -289,17 +299,17 @@ const sparksStyles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: Colors.activeBlue,
+    backgroundColor: colors.activeBlue,
     borderRadius: BorderRadius.full,
   },
   progressLabel: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     marginBottom: Spacing.base,
   },
   separator: {
     height: 1,
-    backgroundColor: Colors.borderLight,
+    backgroundColor: colors.borderLight,
     marginBottom: Spacing.base,
   },
   streakRow: {
@@ -318,7 +328,7 @@ const sparksStyles = StyleSheet.create({
   streakLabel: {
     fontSize: FontSize.xs,
     fontWeight: FontWeight.bold,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     letterSpacing: 1,
   },
   streakRight: {
@@ -332,7 +342,7 @@ const sparksStyles = StyleSheet.create({
   },
   activeToday: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
 });
@@ -341,11 +351,39 @@ const sparksStyles = StyleSheet.create({
 const WEEK_DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 const StreakCalendar = () => {
+  const { colors } = useTheme();
+  const calStyles = getCalStyles(colors);
+  
+  const [currentDate, setCurrentDate] = useState(() => new Date());
+  const [isPickerVisible, setIsPickerVisible] = useState(false);
+  const [pickerMode, setPickerMode] = useState<'month' | 'year'>('month');
+
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  
+  const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+    "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+  ];
+  
+  const monthName = monthNames[currentMonth];
+
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(currentYear, currentMonth + 1, 1));
+  };
+  
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+  const startOffset = (firstDayOfMonth + 6) % 7;
+
   const cells: (number | null)[] = [];
-  for (let i = 0; i < CALENDAR_DATA.startOffset; i++) {
+  for (let i = 0; i < startOffset; i++) {
     cells.push(null);
   }
-  for (let d = 1; d <= CALENDAR_DATA.daysInMonth; d++) {
+  for (let d = 1; d <= daysInMonth; d++) {
     cells.push(d);
   }
   while (cells.length % 7 !== 0) {
@@ -357,21 +395,66 @@ const StreakCalendar = () => {
     weeks.push(cells.slice(i, i + 7));
   }
 
-  const isActive = (day: number | null) =>
-    day !== null && CALENDAR_DATA.activeDays.includes(day);
-  const isToday = (day: number | null) => day === CALENDAR_DATA.todayDay;
+  const todayDate = new Date();
+  const isCurrentMonth = todayDate.getFullYear() === currentYear && todayDate.getMonth() === currentMonth;
+  const todayDay = isCurrentMonth ? todayDate.getDate() : null;
+
+  const activeDays = useMemo(() => {
+     if (currentYear === 2026 && currentMonth === 5) {
+       return CALENDAR_DATA.activeDays;
+     }
+     const fakeDays = [];
+     for(let i=1; i<=daysInMonth; i++) {
+        if ((i + currentMonth + currentYear) % 4 !== 0) {
+           fakeDays.push(i);
+        }
+     }
+     return fakeDays;
+  }, [currentMonth, currentYear, daysInMonth]);
+
+  const isActive = (day: number | null) => day !== null && activeDays.includes(day);
+  const isToday = (day: number | null) => day === todayDay;
+  
+  const years = useMemo(() => {
+    const y = [];
+    for (let i = todayDate.getFullYear() - 5; i <= todayDate.getFullYear() + 5; i++) {
+      y.push(i);
+    }
+    return y;
+  }, [todayDate]);
+
+  const selectMonth = (idx: number) => {
+    setCurrentDate(new Date(currentYear, idx, 1));
+    setPickerMode('year');
+    setIsPickerVisible(false);
+  };
+  
+  const selectYear = (y: number) => {
+    setCurrentDate(new Date(y, currentMonth, 1));
+    setIsPickerVisible(false);
+  };
 
   return (
     <View style={calStyles.card}>
       <View style={calStyles.monthRow}>
-        <TouchableOpacity style={calStyles.navBtn}>
-          <Icon name="chevron-left" size={20} color={Colors.textMuted} />
+        <TouchableOpacity style={calStyles.navBtn} onPress={handlePrevMonth}>
+          <Icon name="chevron-left" size={20} color={colors.textMuted} />
         </TouchableOpacity>
-        <Text style={calStyles.monthTitle}>
-          {CALENDAR_DATA.month} {CALENDAR_DATA.year}
-        </Text>
-        <TouchableOpacity style={calStyles.navBtn}>
-          <Icon name="chevron-right" size={20} color={Colors.textMuted} />
+        
+        <TouchableOpacity 
+          style={{ flexDirection: 'row', alignItems: 'center' }} 
+          onPress={() => {
+            setPickerMode('month');
+            setIsPickerVisible(true);
+          }}>
+          <Text style={calStyles.monthTitle}>
+            {monthName} {currentYear}
+          </Text>
+          <Icon name="menu-down" size={20} color={colors.textPrimary} style={{ marginLeft: 4 }} />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={calStyles.navBtn} onPress={handleNextMonth}>
+          <Icon name="chevron-right" size={20} color={colors.textMuted} />
         </TouchableOpacity>
       </View>
 
@@ -423,23 +506,73 @@ const StreakCalendar = () => {
           </Text>
           {'   '}
           <Text style={calStyles.calFooterBold}>
-            {CALENDAR_DATA.activeThisMonth} Active days
+            {activeDays.length} Active days
           </Text>{' '}
           this month
         </Text>
       </View>
+      
+      <Modal visible={isPickerVisible} transparent={true} animationType="fade">
+        <View style={calStyles.modalOverlay}>
+          <View style={calStyles.modalContent}>
+             <View style={calStyles.modalHeader}>
+               <TouchableOpacity onPress={() => setPickerMode('month')} style={calStyles.modalTab}>
+                 <Text style={[calStyles.modalTabText, pickerMode === 'month' && { color: colors.activeBlue, fontWeight: 'bold' }] as any}>Month</Text>
+               </TouchableOpacity>
+               <TouchableOpacity onPress={() => setPickerMode('year')} style={calStyles.modalTab}>
+                 <Text style={[calStyles.modalTabText, pickerMode === 'year' && { color: colors.activeBlue, fontWeight: 'bold' }] as any}>Year</Text>
+               </TouchableOpacity>
+               <TouchableOpacity onPress={() => setIsPickerVisible(false)} style={calStyles.modalCloseBtn}>
+                 <Icon name="close" size={24} color={colors.textSecondary} />
+               </TouchableOpacity>
+             </View>
+             
+             {pickerMode === 'month' ? (
+               <FlatList
+                 data={monthNames}
+                 keyExtractor={item => item}
+                 numColumns={3}
+                 renderItem={({ item, index }) => (
+                   <TouchableOpacity 
+                     style={[calStyles.pickerItem, index === currentMonth && { backgroundColor: colors.activeBlue }]}
+                     onPress={() => selectMonth(index)}>
+                     <Text style={[calStyles.pickerItemText, index === currentMonth && { color: colors.textWhite }]}>
+                       {item.slice(0, 3)}
+                     </Text>
+                   </TouchableOpacity>
+                 )}
+               />
+             ) : (
+               <FlatList
+                 data={years}
+                 keyExtractor={item => item.toString()}
+                 numColumns={3}
+                 renderItem={({ item }) => (
+                   <TouchableOpacity 
+                     style={[calStyles.pickerItem, item === currentYear && { backgroundColor: colors.activeBlue }]}
+                     onPress={() => selectYear(item)}>
+                     <Text style={[calStyles.pickerItemText, item === currentYear && { color: colors.textWhite }]}>
+                       {item}
+                     </Text>
+                   </TouchableOpacity>
+                 )}
+               />
+             )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
-const calStyles = StyleSheet.create({
+const getCalStyles = (colors: any) => StyleSheet.create({
   card: {
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: colors.backgroundWhite,
     borderRadius: BorderRadius.xl,
     padding: Spacing.base,
     marginBottom: Spacing.md,
     elevation: 2,
-    shadowColor: Colors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -456,7 +589,7 @@ const calStyles = StyleSheet.create({
   monthTitle: {
     fontSize: FontSize.md,
     fontWeight: FontWeight.semiBold,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     letterSpacing: 0.5,
   },
   weekRow: {
@@ -471,7 +604,7 @@ const calStyles = StyleSheet.create({
   weekDayText: {
     fontSize: FontSize.xs,
     fontWeight: FontWeight.semiBold,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     marginBottom: 4,
   },
   dayCircle: {
@@ -482,55 +615,105 @@ const calStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   dayCircleActive: {
-    backgroundColor: Colors.activeBlue,
+    backgroundColor: colors.activeBlue,
   },
   dayCircleToday: {
     backgroundColor: '#E67E22',
   },
   dayText: {
     fontSize: 11,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     fontWeight: FontWeight.medium,
   },
   dayTextActive: {
-    color: Colors.textWhite,
+    color: colors.textWhite,
     fontWeight: FontWeight.bold,
   },
   dayTextToday: {
-    color: Colors.textWhite,
+    color: colors.textWhite,
     fontWeight: FontWeight.bold,
   },
   calFooter: {
     marginTop: Spacing.sm,
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.borderLight,
+    borderTopColor: colors.borderLight,
   },
   calFooterText: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
   },
   calFooterBold: {
     fontWeight: FontWeight.bold,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '85%',
+    backgroundColor: colors.backgroundWhite,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    maxHeight: '60%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderLight,
+    paddingBottom: Spacing.sm,
+  },
+  modalTab: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  modalTabText: {
+    fontSize: FontSize.md,
+    color: colors.textSecondary,
+  },
+  modalCloseBtn: {
+    position: 'absolute',
+    right: 0,
+    top: -5,
+  },
+  pickerItem: {
+    flex: 1,
+    margin: Spacing.xs,
+    paddingVertical: Spacing.md,
+    alignItems: 'center',
+    borderRadius: BorderRadius.md,
+    backgroundColor: colors.backgroundLight,
+  },
+  pickerItemText: {
+    fontSize: FontSize.sm,
+    color: colors.textPrimary,
+    fontWeight: FontWeight.semiBold,
   },
 });
 
-/** Section 4: All-Time Quests */
-const questStatusColors: Record<string, string> = {
-  Complete: '#27AE60',
-  'In Progress': '#F39C12',
-  'Not Started': Colors.textMuted,
-};
+const QuestsCard = () => {
+  const { colors } = useTheme();
+  const questStyles = getQuestStyles(colors);
+  
+  const questStatusColors: Record<string, string> = {
+    Complete: '#27AE60',
+    'In Progress': '#F39C12',
+    'Not Started': colors.textMuted,
+  };
 
-const questStatusBg: Record<string, string> = {
-  Complete: '#EAFAF1',
-  'In Progress': '#FEF9E7',
-  'Not Started': Colors.backgroundLight,
-};
+  const questStatusBg: Record<string, string> = {
+    Complete: '#EAFAF1',
+    'In Progress': '#FEF9E7',
+    'Not Started': colors.backgroundLight,
+  };
 
-const QuestsCard = () => (
+  return (
   <View style={questStyles.card}>
     <View style={questStyles.headerRow}>
       <Text style={questStyles.headerTitle}>ALL-TIME QUESTS</Text>
@@ -538,13 +721,13 @@ const QuestsCard = () => (
         <Text style={questStyles.headerCount}>
           ✅ {QUESTS_DATA.completed}/{QUESTS_DATA.total}
         </Text>
-        <Icon name="chevron-right" size={16} color={Colors.textMuted} />
+        <Icon name="chevron-right" size={16} color={colors.textMuted} />
       </TouchableOpacity>
     </View>
 
     {QUESTS_DATA.items.map((quest, idx) => {
-      const statusColor = questStatusColors[quest.status] ?? Colors.textMuted;
-      const statusBg = questStatusBg[quest.status] ?? Colors.backgroundLight;
+      const statusColor = questStatusColors[quest.status] ?? colors.textMuted;
+      const statusBg = questStatusBg[quest.status] ?? colors.backgroundLight;
       return (
         <View key={quest.id}>
           {idx > 0 && <View style={questStyles.divider} />}
@@ -583,16 +766,17 @@ const QuestsCard = () => (
       );
     })}
   </View>
-);
+  );
+};
 
-const questStyles = StyleSheet.create({
+const getQuestStyles = (colors: any) => StyleSheet.create({
   card: {
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: colors.backgroundWhite,
     borderRadius: BorderRadius.xl,
     padding: Spacing.base,
     marginBottom: Spacing.md,
     elevation: 2,
-    shadowColor: Colors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -606,7 +790,7 @@ const questStyles = StyleSheet.create({
   headerTitle: {
     fontSize: FontSize.sm,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     letterSpacing: 0.5,
   },
   headerRight: {
@@ -616,12 +800,12 @@ const questStyles = StyleSheet.create({
   },
   headerCount: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     fontWeight: FontWeight.medium,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.borderLight,
+    backgroundColor: colors.borderLight,
     marginVertical: Spacing.sm,
   },
   questRow: {
@@ -650,7 +834,7 @@ const questStyles = StyleSheet.create({
   questName: {
     fontSize: FontSize.sm,
     fontWeight: FontWeight.semiBold,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     flex: 1,
     marginRight: Spacing.sm,
   },
@@ -665,7 +849,7 @@ const questStyles = StyleSheet.create({
   },
   progressTrack: {
     height: 6,
-    backgroundColor: Colors.borderLight,
+    backgroundColor: colors.borderLight,
     borderRadius: BorderRadius.full,
     overflow: 'hidden',
   },
@@ -675,13 +859,16 @@ const questStyles = StyleSheet.create({
   },
   questDetail: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     marginTop: 3,
   },
 });
 
 /** Section 5: Stats Grid (2×2) */
-const StatsGrid = () => (
+const StatsGrid = () => {
+  const { colors } = useTheme();
+  const statsStyles = getStatsStyles(colors);
+  return (
   <View style={statsStyles.container}>
     <View style={statsStyles.grid}>
       {STATS_DATA.map((stat) => (
@@ -703,9 +890,10 @@ const StatsGrid = () => (
       Use the platform more to improve your stats and rank
     </Text>
   </View>
-);
+  );
+};
 
-const statsStyles = StyleSheet.create({
+const getStatsStyles = (colors: any) => StyleSheet.create({
   container: {
     marginBottom: Spacing.xxl,
   },
@@ -731,7 +919,7 @@ const statsStyles = StyleSheet.create({
   cardLabel: {
     fontSize: FontSize.xs,
     fontWeight: FontWeight.bold,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     letterSpacing: 0.3,
     flexShrink: 1,
   },
@@ -742,12 +930,12 @@ const statsStyles = StyleSheet.create({
   },
   cardSubtitle: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
   tipText: {
     fontSize: FontSize.xs,
-    color: Colors.activeBlue,
+    color: colors.activeBlue,
     textAlign: 'center',
     fontStyle: 'italic',
   },
@@ -756,6 +944,8 @@ const statsStyles = StyleSheet.create({
 // ─── Main DashboardScreen ─────────────────────────────────────────────────────
 
 const DashboardScreen: React.FC = () => {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
   const navigation = useNavigation();
   const { state: authState } = useAuth();
   const insets = useSafeAreaInsets();
@@ -798,10 +988,10 @@ const DashboardScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.backgroundLight,
+    backgroundColor: colors.backgroundLight,
   },
   scrollView: {
     flex: 1,

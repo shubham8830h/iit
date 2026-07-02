@@ -13,7 +13,8 @@ import {
   TextInputProps,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors, FontSize, FontWeight, BorderRadius, Spacing, InputHeight } from '../../constants';
+import { FontSize, FontWeight, BorderRadius, Spacing, InputHeight } from '../../constants';
+import { useTheme } from '../../store/ThemeContext';
 
 interface CustomInputProps extends Omit<TextInputProps, 'style'> {
   label?: string;
@@ -21,6 +22,8 @@ interface CustomInputProps extends Omit<TextInputProps, 'style'> {
   isPassword?: boolean;
   containerStyle?: ViewStyle;
   leftIcon?: string;
+  backgroundColor?: string;
+  borderColor?: string;
 }
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -29,8 +32,15 @@ const CustomInput: React.FC<CustomInputProps> = ({
   isPassword = false,
   containerStyle,
   leftIcon,
+  backgroundColor,
+  borderColor,
   ...textInputProps
 }) => {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
+  
+  const bgColor = backgroundColor || colors.backgroundWhite;
+  
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -39,26 +49,27 @@ const CustomInput: React.FC<CustomInputProps> = ({
   };
 
   const getBorderColor = () => {
-    if (error) { return Colors.error; }
-    if (isFocused) { return Colors.activeBlue; }
-    return Colors.borderLight;
+    if (error) { return colors.error; }
+    if (isFocused) { return colors.activeBlue; }
+    if (borderColor) { return borderColor; }
+    return colors.borderLight;
   };
 
   return (
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <View style={[styles.inputWrapper, { borderColor: getBorderColor() }]}>
+      <View style={[styles.inputWrapper, { borderColor: getBorderColor(), backgroundColor: bgColor }]}>
         {leftIcon && (
           <Icon
             name={leftIcon}
             size={20}
-            color={Colors.textMuted}
+            color={colors.textMuted}
             style={styles.leftIcon}
           />
         )}
         <TextInput
           style={[styles.input, leftIcon ? styles.inputWithIcon : null]}
-          placeholderTextColor={Colors.textMuted}
+          placeholderTextColor={colors.textMuted}
           secureTextEntry={isPassword && !isPasswordVisible}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -73,7 +84,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
             <Icon
               name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
               size={22}
-              color={Colors.textMuted}
+              color={colors.textMuted}
             />
           </TouchableOpacity>
         )}
@@ -83,14 +94,14 @@ const CustomInput: React.FC<CustomInputProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     marginBottom: Spacing.base,
   },
   label: {
     fontSize: FontSize.md,
     fontWeight: FontWeight.medium,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginBottom: Spacing.sm,
   },
   inputWrapper: {
@@ -99,7 +110,6 @@ const styles = StyleSheet.create({
     height: InputHeight.lg,
     borderWidth: 1,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.backgroundWhite,
     paddingHorizontal: Spacing.base,
   },
   leftIcon: {
@@ -108,7 +118,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: FontSize.base,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     height: '100%',
     padding: 0,
   },
@@ -121,7 +131,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: FontSize.sm,
-    color: Colors.error,
+    color: colors.error,
     marginTop: Spacing.xs,
   },
 });

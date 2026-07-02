@@ -12,7 +12,8 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { Colors, FontSize, FontWeight, BorderRadius, ButtonHeight, Spacing } from '../../constants';
+import { FontSize, FontWeight, BorderRadius, ButtonHeight, Spacing } from '../../constants';
+import { useTheme } from '../../store/ThemeContext';
 
 interface CustomButtonProps {
   title: string;
@@ -33,6 +34,9 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   style,
   textStyle,
 }) => {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
+  
   const isDisabled = disabled || isLoading;
 
   const getButtonStyle = (): ViewStyle[] => {
@@ -91,7 +95,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       {isLoading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'primary' ? Colors.textWhite : Colors.primary}
+          color={variant === 'primary' ? colors.textWhite : colors.primary}
         />
       ) : (
         <Text style={getTextStyle()}>{title}</Text>
@@ -100,7 +104,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   base: {
     height: ButtonHeight.lg,
     borderRadius: BorderRadius.lg,
@@ -110,8 +114,8 @@ const styles = StyleSheet.create({
   },
   // Primary — teal brand color (matches the IITPK web app login button)
   primary: {
-    backgroundColor: Colors.primary,
-    shadowColor: Colors.primary,
+    backgroundColor: colors.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 8,
@@ -121,12 +125,12 @@ const styles = StyleSheet.create({
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1.5,
-    borderColor: Colors.primary,
+    borderColor: colors.primary,
   },
   // Danger — red for destructive actions
   danger: {
-    backgroundColor: Colors.accent,
-    shadowColor: Colors.accent,
+    backgroundColor: colors.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -145,16 +149,16 @@ const styles = StyleSheet.create({
     fontWeight: FontWeight.semiBold,
   },
   primaryText: {
-    color: Colors.textWhite,
+    color: colors.textWhite,
   },
   outlineText: {
-    color: Colors.primary,
+    color: colors.primary,
   },
   dangerText: {
-    color: Colors.textWhite,
+    color: colors.textWhite,
   },
   textVariantText: {
-    color: Colors.textLink,
+    color: colors.textLink,
     fontSize: FontSize.md,
     fontWeight: FontWeight.regular,
   },

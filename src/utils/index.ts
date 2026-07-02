@@ -17,6 +17,24 @@ const BASE_WIDTH = 390;
 export const scale = (size: number): number =>
   Math.round((SCREEN_WIDTH / BASE_WIDTH) * size);
 
+/** Base design height (iPhone 13 / 844px) */
+const BASE_HEIGHT = 844;
+
+/**
+ * Scales a size value relative to the base design height.
+ * Useful for vertical spacing or component heights.
+ */
+export const verticalScale = (size: number): number =>
+  Math.round((SCREEN_HEIGHT / BASE_HEIGHT) * size);
+
+/**
+ * Moderately scales a size (e.g. for fonts). 
+ * Prevents text from becoming too huge on large devices like tablets.
+ * factor = 0.5 means it scales half as fast.
+ */
+export const moderateScale = (size: number, factor: number = 0.5): number =>
+  Math.round(size + (scale(size) - size) * factor);
+
 /**
  * Returns the screen width.
  */

@@ -2,16 +2,18 @@
  * Typography constants for consistent font usage across the app.
  */
 
+import { moderateScale } from '../utils';
+
 export const FontSize = {
-  xs: 10,
-  sm: 12,
-  md: 14,
-  base: 16,
-  lg: 18,
-  xl: 20,
-  xxl: 24,
-  xxxl: 30,
-  title: 36,
+  xs: moderateScale(10),
+  sm: moderateScale(12),
+  md: moderateScale(14),
+  base: moderateScale(16),
+  lg: moderateScale(18),
+  xl: moderateScale(20),
+  xxl: moderateScale(24),
+  xxxl: moderateScale(30),
+  title: moderateScale(36),
 } as const;
 
 export const FontWeight = {

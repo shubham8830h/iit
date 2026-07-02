@@ -9,13 +9,18 @@ import { useAuth } from '../store/AuthContext';
 import AuthNavigator from './AuthNavigator';
 import DrawerNavigator from './DrawerNavigator';
 
+import { FullScreenLoader } from '../components';
+
 const AppNavigator: React.FC = () => {
   const { state } = useAuth();
 
   return (
-    <NavigationContainer>
-      {state.isAuthenticated ? <DrawerNavigator /> : <AuthNavigator />}
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        {state.isAuthenticated ? <DrawerNavigator /> : <AuthNavigator />}
+      </NavigationContainer>
+      {state.isLoading && <FullScreenLoader />}
+    </>
   );
 };
 

@@ -7,10 +7,13 @@ import { View, Text, StyleSheet } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors, FontSize, FontWeight, Spacing, BorderRadius } from '../../constants';
+import { FontSize, FontWeight, Spacing, BorderRadius } from '../../constants';
 import { Header } from '../../components';
+import { useTheme } from '../../store/ThemeContext';
 
 const AIFacultyScreen: React.FC = () => {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
@@ -22,7 +25,7 @@ const AIFacultyScreen: React.FC = () => {
       />
       <View style={styles.content}>
         <View style={styles.placeholderCard}>
-          <Icon name="robot-outline" size={64} color={Colors.activeBlue} />
+          <Icon name="robot-outline" size={64} color={colors.activeBlue} />
           <Text style={styles.placeholderTitle}>AI Faculty</Text>
           <Text style={styles.placeholderText}>
             AI Faculty sessions and chat will be available after API integration.
@@ -33,10 +36,10 @@ const AIFacultyScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.backgroundLight,
+    backgroundColor: colors.backgroundLight,
   },
   content: {
     flex: 1,
@@ -45,12 +48,12 @@ const styles = StyleSheet.create({
     padding: Spacing.xl,
   },
   placeholderCard: {
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: colors.backgroundWhite,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xxxl,
     alignItems: 'center',
     elevation: 2,
-    shadowColor: Colors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -59,13 +62,13 @@ const styles = StyleSheet.create({
   placeholderTitle: {
     fontSize: FontSize.xxl,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginTop: Spacing.lg,
     marginBottom: Spacing.md,
   },
   placeholderText: {
     fontSize: FontSize.md,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
   },

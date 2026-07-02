@@ -1,7 +1,7 @@
 /**
- * LoginScreen — Replicates the IITPK AI Faculty web login page.
- * Features: Branded teal gradient header, email/password inputs, login button,
- * forgot password link (right-aligned), terms & conditions, AI Faculty branding.
+ * LoginScreen — Replicates the IITPK AI Faculty web login page exactly.
+ * Features: Unified white card with teal top block, blue-gray inputs,
+ * vector icons for moon, browser, and flask.
  */
 
 import React, { useState, useCallback } from 'react';
@@ -10,18 +10,22 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  KeyboardAvoidingView,
   Platform,
-  TouchableOpacity,
   Alert,
+  TouchableOpacity,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors, FontSize, FontWeight, Spacing, BorderRadius } from '../../constants';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { FontSize, FontWeight, Spacing, BorderRadius } from '../../constants';
 import { CustomButton, CustomInput } from '../../components';
 import { useAuth } from '../../store/AuthContext';
+import { useTheme } from '../../store/ThemeContext';
 
 const LoginScreen: React.FC = () => {
   const { login, state, clearError } = useAuth();
+  const { colors, isDarkMode, toggleTheme } = useTheme();
+  const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
 
   const [email, setEmail] = useState('');
@@ -76,125 +80,130 @@ const LoginScreen: React.FC = () => {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing.xl },
+          { paddingTop: insets.top + Spacing.lg, paddingBottom: insets.bottom + Spacing.xl },
         ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
 
         {/* Theme toggle (top-right) */}
         <View style={styles.topBar}>
-          <TouchableOpacity style={styles.themeToggle}>
-            <Text style={styles.themeIcon}>🌙</Text>
+          <TouchableOpacity style={styles.themeToggle} onPress={toggleTheme}>
+            <Icon name={isDarkMode ? 'weather-sunny' : 'weather-night'} size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
-        {/* Branded Header — teal gradient card */}
-        <View style={styles.headerContainer}>
+        {/* Unified Card Container */}
+        <View style={styles.cardContainer}>
+          
+          {/* Branded Header block inside the card */}
           <View style={styles.gradientCard}>
             <Text style={styles.brandTextII}>ii</Text>
             <Text style={styles.brandTextTPK}>TPK</Text>
           </View>
-        </View>
 
-        {/* Login Form */}
-        <View style={styles.formContainer}>
-          <CustomInput
-            label="Email"
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={(text) => {
-              setEmail(text);
-              if (emailError) { setEmailError(''); }
-            }}
-            error={emailError}
-            keyboardType="email-address"
-            autoComplete="email"
-          />
+          {/* Login Form Content */}
+          <View style={styles.formContainer}>
+            <CustomInput
+              label="Email"
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={(text) => {
+                setEmail(text);
+                if (emailError) { setEmailError(''); }
+              }}
+              error={emailError}
+              keyboardType="email-address"
+              autoComplete="email"
+              backgroundColor="#EEF2F6"
+              borderColor="#EEF2F6"
+            />
 
-          <CustomInput
-            label="Password"
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              if (passwordError) { setPasswordError(''); }
-            }}
-            error={passwordError}
-            isPassword
-          />
+            <CustomInput
+              label="Password"
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={(text) => {
+                setPassword(text);
+                if (passwordError) { setPasswordError(''); }
+              }}
+              error={passwordError}
+              isPassword
+              backgroundColor="#EEF2F6"
+              borderColor="#EEF2F6"
+            />
 
-          {/* Forgot Password — right-aligned as in web app */}
-          <TouchableOpacity
-            onPress={handleForgotPassword}
-            style={styles.forgotPasswordContainer}>
-            <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-          </TouchableOpacity>
+            {/* Forgot Password */}
+            <TouchableOpacity
+              onPress={handleForgotPassword}
+              style={styles.forgotPasswordContainer}>
+              <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
+            </TouchableOpacity>
 
-          {/* Browser recommendation hint */}
-          <View style={styles.browserHint}>
-            <View style={styles.browserHintIconBox}>
-              <Text style={styles.browserHintIcon}>📋</Text>
+            {/* Browser recommendation hint */}
+            <View style={styles.browserHint}>
+              <Icon name="monitor-cellphone" size={22} color={colors.textSecondary} />
+              <Text style={styles.browserHintText}>
+                For best experience use <Text style={styles.browserHintBold}>Google Chrome</Text>
+              </Text>
             </View>
-            <Text style={styles.browserHintText}>For best experience{'\n'}use</Text>
-            <Text style={styles.browserHintBold}>Google{'\n'}Chrome</Text>
-          </View>
 
-          {/* API / Auth Error */}
-          {state.error && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{state.error}</Text>
+            {/* API / Auth Error */}
+            {state.error ? (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>{state.error}</Text>
+              </View>
+            ) : null}
+
+            {/* Login Button */}
+            <CustomButton
+              title="Login"
+              onPress={handleLogin}
+              isLoading={state.isLoading}
+              style={styles.loginButton}
+            />
+
+            {/* Terms & Conditions */}
+            <View style={styles.termsContainer}>
+              <Text style={styles.termsText}>
+                By continuing, you agree to our{' '}
+                <Text style={styles.termsLink}>Terms & Conditions</Text>
+              </Text>
             </View>
-          )}
+            
+            {/* Divider */}
+            <View style={styles.divider} />
 
-          {/* Login Button — teal, matching web app */}
-          <CustomButton
-            title="Login"
-            onPress={handleLogin}
-            isLoading={state.isLoading}
-            style={styles.loginButton}
-          />
-
-          {/* Terms & Conditions */}
-          <View style={styles.termsContainer}>
-            <Text style={styles.termsText}>
-              By continuing, you agree to our{' '}
-              <Text style={styles.termsLink}>Terms &amp; Conditions</Text>
-            </Text>
-          </View>
-        </View>
-
-        {/* Divider */}
-        <View style={styles.divider} />
-
-        {/* AI Faculty Branding */}
-        <View style={styles.brandingContainer}>
-          <View style={styles.brandingRow}>
-            <View style={styles.aiFacultyLogo}>
-              <Text style={styles.aiFacultyLogoText}>🤖</Text>
+            {/* AI Faculty Branding */}
+            <View style={styles.brandingContainer}>
+              <View style={styles.brandingRow}>
+                {/* Placeholder for custom wing icon - using closest vector approx */}
+                <Icon name="feather" size={24} color="#63B3ED" style={{ transform: [{ rotate: '45deg' }] }} />
+                <Text style={styles.brandingText}>AI FACULTY</Text>
+              </View>
             </View>
-            <Text style={styles.brandingText}>AI FACULTY</Text>
+
           </View>
         </View>
 
         {/* Footer */}
         <View style={styles.footerContainer}>
           <Text style={styles.footerText}>
-            © 2026 Powered by{' '}
-            <Text style={styles.footerLink}>AIFaculty.ai</Text>
+            © 2026 Powered by <Text style={styles.footerLink}>AIFaculty.ai</Text>
             {'  |  '}
             For experimental features please click{' '}
-            <Text style={styles.footerLink}>here</Text>
+            <Text style={styles.footerLink}>here <Icon name="flask-outline" size={14} /></Text>
           </Text>
         </View>
+
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   keyboardView: {
     flex: 1,
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: colors.backgroundLight,
   },
   scrollView: {
     flex: 1,
@@ -207,93 +216,73 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingVertical: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   themeToggle: {
     width: 36,
     height: 36,
-    borderRadius: BorderRadius.full,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.borderLight,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  themeIcon: {
-    fontSize: 16,
-  },
-  headerContainer: {
-    width: '100%',
+  cardContainer: {
+    backgroundColor: colors.backgroundWhite,
+    borderRadius: BorderRadius.xl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
     marginBottom: Spacing.xxl,
-    borderRadius: BorderRadius.xxl,
-    overflow: 'hidden',
   },
   gradientCard: {
     width: '100%',
-    paddingVertical: Spacing.xxxl + Spacing.md,
+    paddingVertical: Spacing.xxl + Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: BorderRadius.xxl,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
     flexDirection: 'row',
-    backgroundColor: '#1E4D5C',
+    backgroundColor: '#0d5b7a', // Exact teal from screenshot
   },
   brandTextII: {
-    fontSize: 44,
+    fontSize: 40,
     fontWeight: FontWeight.bold,
-    color: '#FFA726',
-    textShadowColor: 'rgba(0,0,0,0.3)',
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 4,
+    color: '#FF6B00',
   },
   brandTextTPK: {
-    fontSize: 44,
+    fontSize: 40,
     fontWeight: FontWeight.extraBold,
-    color: '#FF7043',
-    textShadowColor: 'rgba(0,0,0,0.3)',
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 4,
+    color: '#FF8A00',
   },
   formContainer: {
-    width: '100%',
+    padding: Spacing.xl,
   },
   forgotPasswordContainer: {
     alignSelf: 'flex-end',
-    marginTop: Spacing.xs,
     marginBottom: Spacing.lg,
-    paddingVertical: Spacing.xs,
+    marginTop: -Spacing.sm,
   },
   forgotPasswordText: {
-    fontSize: FontSize.md,
-    color: Colors.textSecondary,
+    fontSize: FontSize.sm,
+    color: colors.textSecondary,
   },
   browserHint: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
     gap: Spacing.sm,
-  },
-  browserHintIconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: BorderRadius.sm,
-    backgroundColor: Colors.backgroundLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: Colors.borderLight,
-  },
-  browserHintIcon: {
-    fontSize: 18,
   },
   browserHintText: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
-    lineHeight: 18,
+    color: colors.textSecondary,
   },
   browserHintBold: {
-    fontSize: FontSize.sm,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
-    lineHeight: 18,
+    color: colors.textPrimary,
   },
   errorContainer: {
     backgroundColor: '#FEE2E2',
@@ -303,11 +292,12 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: FontSize.sm,
-    color: Colors.error,
+    color: colors.error,
     textAlign: 'center',
   },
   loginButton: {
-    marginTop: Spacing.sm,
+    backgroundColor: '#0d5b7a', // Match the top header
+    marginTop: Spacing.xs,
   },
   termsContainer: {
     alignItems: 'center',
@@ -315,57 +305,46 @@ const styles = StyleSheet.create({
   },
   termsText: {
     fontSize: FontSize.sm,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 20,
   },
   termsLink: {
-    color: Colors.activeBlue,
+    color: '#63B3ED', // Light blue from screenshot
     fontWeight: FontWeight.medium,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.borderLight,
+    backgroundColor: '#E2E8F0',
     marginVertical: Spacing.xl,
   },
   brandingContainer: {
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xs,
   },
   brandingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  aiFacultyLogo: {
-    width: 36,
-    height: 36,
-    borderRadius: BorderRadius.sm,
-    backgroundColor: Colors.backgroundLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  aiFacultyLogoText: {
-    fontSize: 20,
-  },
   brandingText: {
-    fontSize: FontSize.xl,
+    fontSize: FontSize.lg,
     fontWeight: FontWeight.bold,
-    color: Colors.textPrimary,
-    letterSpacing: 1.5,
+    color: colors.textPrimary,
+    letterSpacing: 0.5,
   },
   footerContainer: {
     alignItems: 'center',
-    paddingTop: Spacing.md,
+    paddingBottom: Spacing.lg,
   },
   footerText: {
     fontSize: FontSize.xs,
-    color: Colors.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
-    lineHeight: 18,
+    lineHeight: 20,
   },
   footerLink: {
-    color: Colors.activeBlue,
+    color: colors.textMuted,
+    textDecorationLine: 'underline',
   },
 });
 

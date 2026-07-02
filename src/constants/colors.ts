@@ -1,9 +1,43 @@
 /**
- * Color palette matching the IITPK AI Faculty web application.
- * All colors used across the app should be referenced from here.
+ * Color palettes for Light and Dark modes.
  */
 
-export const Colors = {
+export type ColorPalette = {
+  primary: string;
+  primaryLight: string;
+  primaryGradientStart: string;
+  primaryGradientEnd: string;
+  accent: string;
+  accentDark: string;
+  accentLight: string;
+  activeBlue: string;
+  activeBlueBg: string;
+  activeBlueLight: string;
+  textPrimary: string;
+  textSecondary: string;
+  textMuted: string;
+  textWhite: string;
+  textLink: string;
+  textDanger: string;
+  backgroundWhite: string;
+  backgroundLight: string;
+  backgroundGray: string;
+  backgroundDark: string;
+  borderLight: string;
+  borderMedium: string;
+  borderDark: string;
+  success: string;
+  warning: string;
+  error: string;
+  info: string;
+  shadow: string;
+  shadowDark: string;
+  overlay: string;
+  toggleActive: string;
+  toggleInactive: string;
+};
+
+export const LightColors: ColorPalette = {
   // Primary brand colors
   primary: '#1B3C4B',
   primaryLight: '#2D6E7E',
@@ -55,6 +89,51 @@ export const Colors = {
   // Toggle
   toggleActive: '#FFA726',
   toggleInactive: '#E0E0E0',
-} as const;
+};
 
-export type ColorKey = keyof typeof Colors;
+export const DarkColors: ColorPalette = {
+  primary: '#2D6E7E', // slightly lighter for dark mode visibility
+  primaryLight: '#4A9AB0',
+  primaryGradientStart: '#1B3C4B',
+  primaryGradientEnd: '#2D7D8E',
+
+  accent: '#F07068',
+  accentDark: '#D44840',
+  accentLight: '#F59C96',
+
+  activeBlue: '#60A5FA',
+  activeBlueBg: '#1E3A5F',
+  activeBlueLight: '#3B82F6',
+
+  textPrimary: '#F9FAFB',
+  textSecondary: '#D1D5DB',
+  textMuted: '#9CA3AF',
+  textWhite: '#FFFFFF',
+  textLink: '#60A5FA',
+  textDanger: '#F87171',
+
+  backgroundWhite: '#1F2937', // dark card background
+  backgroundLight: '#111827', // darker main background
+  backgroundGray: '#374151',
+  backgroundDark: '#030712',
+
+  borderLight: '#374151',
+  borderMedium: '#4B5563',
+  borderDark: '#6B7280',
+
+  success: '#34D399',
+  warning: '#FBBF24',
+  error: '#F87171',
+  info: '#60A5FA',
+
+  shadow: 'rgba(0, 0, 0, 0.5)',
+  shadowDark: 'rgba(0, 0, 0, 0.8)',
+  overlay: 'rgba(0, 0, 0, 0.7)',
+
+  toggleActive: '#FFA726',
+  toggleInactive: '#4B5563',
+};
+
+// Default export for fallback or static usage before context is ready
+export const Colors = LightColors;
+export type ColorKey = keyof typeof LightColors;

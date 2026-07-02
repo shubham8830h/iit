@@ -17,8 +17,9 @@ import {
 } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors, FontSize, FontWeight, Spacing, BorderRadius } from '../../constants';
+import { FontSize, FontWeight, Spacing, BorderRadius } from '../../constants';
 import { useAuth } from '../../store/AuthContext';
+import { useTheme } from '../../store/ThemeContext';
 import type { DrawerMenuItem } from '../../types';
 
 const menuItems: DrawerMenuItem[] = [
@@ -30,8 +31,9 @@ const menuItems: DrawerMenuItem[] = [
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   const { logout } = useAuth();
+  const { colors, isDarkMode, toggleTheme } = useTheme();
+  const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const currentRoute = props.state.routes[props.state.index]?.name;
 
@@ -55,7 +57,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           <Text style={styles.headerTitle}>IITPK-DEV</Text>
         </View>
         <TouchableOpacity style={styles.collapseButton}>
-          <Icon name="dock-window" size={20} color={Colors.textMuted} />
+          <Icon name="dock-window" size={20} color={colors.textMuted} />
         </TouchableOpacity>
       </View>
 
@@ -79,7 +81,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
                 <Icon
                   name={item.icon}
                   size={22}
-                  color={isActive ? Colors.activeBlue : Colors.textSecondary}
+                  color={isActive ? colors.activeBlue : colors.textSecondary}
                   style={styles.menuIcon}
                 />
                 <Text
@@ -99,15 +101,15 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
       <View style={[styles.bottomSection, { paddingBottom: insets.bottom + Spacing.base }]}>
         {/* Dark Mode Toggle */}
         <View style={styles.darkModeRow}>
-          <Icon name="weather-night" size={22} color={Colors.textSecondary} />
+          <Icon name={isDarkMode ? 'weather-sunny' : 'weather-night'} size={22} color={colors.textSecondary} />
           <Text style={styles.darkModeLabel}>Dark Mode</Text>
           <View style={styles.toggleContainer}>
-            <Text style={styles.toggleEmoji}>☀️</Text>
+            <Text style={styles.toggleEmoji}>{isDarkMode ? '🌙' : '☀️'}</Text>
             <Switch
               value={isDarkMode}
-              onValueChange={setIsDarkMode}
-              trackColor={{ false: Colors.toggleInactive, true: Colors.activeBlue }}
-              thumbColor={Colors.backgroundWhite}
+              onValueChange={toggleTheme}
+              trackColor={{ false: colors.toggleInactive, true: colors.activeBlue }}
+              thumbColor={colors.backgroundWhite}
               style={styles.toggle}
             />
           </View>
@@ -118,7 +120,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
           style={styles.logoutButton}
           onPress={handleLogout}
           activeOpacity={0.7}>
-          <Icon name="logout" size={22} color={Colors.accent} />
+          <Icon name="logout" size={22} color={colors.accent} />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </View>
@@ -126,10 +128,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.backgroundWhite,
+    backgroundColor: colors.backgroundWhite,
   },
   header: {
     flexDirection: 'row',
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.base,
     paddingVertical: Spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   logoContainer: {
     flexDirection: 'row',
@@ -148,25 +150,25 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: BorderRadius.sm,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   logoText: {
     fontSize: FontSize.xs,
     fontWeight: FontWeight.bold,
-    color: Colors.textWhite,
+    color: colors.textWhite,
   },
   headerTitle: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.semiBold,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginLeft: Spacing.md,
   },
   collapseButton: {
     padding: Spacing.sm,
     borderWidth: 1,
-    borderColor: Colors.borderLight,
+    borderColor: colors.borderLight,
     borderRadius: BorderRadius.sm,
   },
   scrollContent: {
@@ -184,7 +186,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   menuItemActive: {
-    backgroundColor: Colors.activeBlueBg,
+    backgroundColor: colors.activeBlueBg,
   },
   menuIcon: {
     marginRight: Spacing.md,
@@ -192,15 +194,15 @@ const styles = StyleSheet.create({
   menuLabel: {
     fontSize: FontSize.base,
     fontWeight: FontWeight.medium,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   menuLabelActive: {
-    color: Colors.activeBlue,
+    color: colors.activeBlue,
     fontWeight: FontWeight.semiBold,
   },
   bottomSection: {
     borderTopWidth: 1,
-    borderTopColor: Colors.borderLight,
+    borderTopColor: colors.borderLight,
     paddingHorizontal: Spacing.base,
     paddingTop: Spacing.base,
   },
@@ -211,7 +213,7 @@ const styles = StyleSheet.create({
   },
   darkModeLabel: {
     fontSize: FontSize.base,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     fontWeight: FontWeight.medium,
     marginLeft: Spacing.md,
     flex: 1,
@@ -235,7 +237,7 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: FontSize.base,
     fontWeight: FontWeight.medium,
-    color: Colors.accent,
+    color: colors.accent,
     marginLeft: Spacing.md,
   },
 });
