@@ -1,0 +1,6 @@
+/**
+ * Custom hooks barrel export.
+ * Add custom hooks here as the app grows.
+ */
+
+export { useAuth } from '../store/AuthContext';

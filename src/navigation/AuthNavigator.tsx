@@ -1,0 +1,21 @@
+/**
+ * AuthNavigator — Stack navigator for unauthenticated users.
+ * Contains the login screen (expandable for signup, forgot password, etc.)
+ */
+
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { LoginScreen } from '../screens';
+import type { AuthStackParamList } from '../types';
+
+const Stack = createNativeStackNavigator<AuthStackParamList>();
+
+const AuthNavigator: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+    </Stack.Navigator>
+  );
+};
+
+export default AuthNavigator;
