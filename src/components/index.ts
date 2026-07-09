@@ -7,3 +7,4 @@ export { default as CustomInput } from './Input/CustomInput';
 export { default as Header } from './Header/Header';
 export { default as CustomDrawerContent } from './DrawerContent/CustomDrawerContent';
 export { default as FullScreenLoader } from './Loader/FullScreenLoader';
+export { default as NewConversationModal } from './NewConversationModal/NewConversationModal';

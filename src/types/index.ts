@@ -42,12 +42,14 @@ export interface LoginFormData {
 // Navigation types
 export type AuthStackParamList = {
   Login: undefined;
+  ForgotPassword: undefined;
+  TermsConditions: undefined;
 };
 
 export type DrawerParamList = {
   Dashboard: undefined;
   Courses: undefined;
-  AIFaculty: undefined;
+  AIFaculty: { title?: string; subject?: string; chapter?: string } | undefined;
   RemedialLearning: undefined;
 };
 

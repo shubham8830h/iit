@@ -16,6 +16,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { FontSize, FontWeight, Spacing, BorderRadius } from '../../constants';
 import { CustomButton, CustomInput } from '../../components';
@@ -27,6 +28,7 @@ const LoginScreen: React.FC = () => {
   const { colors, isDarkMode, toggleTheme } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -65,11 +67,7 @@ const LoginScreen: React.FC = () => {
   }, [email, password, login, clearError]);
 
   const handleForgotPassword = () => {
-    Alert.alert(
-      'Forgot Password',
-      'Password reset functionality will be available after API integration.',
-      [{ text: 'OK' }],
-    );
+    navigation.navigate('ForgotPassword');
   };
 
   return (
@@ -166,7 +164,12 @@ const LoginScreen: React.FC = () => {
             <View style={styles.termsContainer}>
               <Text style={styles.termsText}>
                 By continuing, you agree to our{' '}
-                <Text style={styles.termsLink}>Terms & Conditions</Text>
+                <Text 
+                  style={styles.termsLink}
+                  onPress={() => navigation.navigate('TermsConditions')}
+                >
+                  Terms & Conditions
+                </Text>
               </Text>
             </View>
             

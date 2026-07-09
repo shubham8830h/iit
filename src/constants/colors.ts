@@ -35,6 +35,11 @@ export type ColorPalette = {
   overlay: string;
   toggleActive: string;
   toggleInactive: string;
+  // Subject Colors
+  subjectMath: string;
+  subjectPhysics: string;
+  subjectChemistry: string;
+  subjectBiology: string;
 };
 
 export const LightColors: ColorPalette = {
@@ -89,6 +94,12 @@ export const LightColors: ColorPalette = {
   // Toggle
   toggleActive: '#FFA726',
   toggleInactive: '#E0E0E0',
+
+  // Subject Colors
+  subjectMath: '#5CBCE8',
+  subjectPhysics: '#F8457A',
+  subjectChemistry: '#0DC4D3',
+  subjectBiology: '#7445FF',
 };
 
 export const DarkColors: ColorPalette = {
@@ -132,6 +143,12 @@ export const DarkColors: ColorPalette = {
 
   toggleActive: '#FFA726',
   toggleInactive: '#4B5563',
+
+  // Subject Colors (can keep same or slightly tweak for dark mode)
+  subjectMath: '#5CBCE8',
+  subjectPhysics: '#F8457A',
+  subjectChemistry: '#0DC4D3',
+  subjectBiology: '#7445FF',
 };
 
 // Default export for fallback or static usage before context is ready

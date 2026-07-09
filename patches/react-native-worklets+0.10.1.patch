@@ -1,0 +1,29 @@
+diff --git a/node_modules/react-native-worklets/android/CMakeLists.txt b/node_modules/react-native-worklets/android/CMakeLists.txt
+index d10aa6b..4c65c0e 100644
+--- a/node_modules/react-native-worklets/android/CMakeLists.txt
++++ b/node_modules/react-native-worklets/android/CMakeLists.txt
+@@ -89,7 +89,7 @@ target_include_directories(
+ set_target_properties(worklets PROPERTIES LINKER_LANGUAGE CXX)
+ 
+ target_link_libraries(worklets android log ReactAndroid::reactnative
+-                      ReactAndroid::jsi fbjni::fbjni)
++                      ReactAndroid::jsi fbjni::fbjni c++_shared)
+ 
+ if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 82)
+   target_link_libraries(worklets hermes-engine::hermesvm)
+diff --git a/node_modules/react-native-worklets/android/build.gradle.kts b/node_modules/react-native-worklets/android/build.gradle.kts
+index 2e01292..a373876 100644
+--- a/node_modules/react-native-worklets/android/build.gradle.kts
++++ b/node_modules/react-native-worklets/android/build.gradle.kts
+@@ -227,7 +227,10 @@ android {
+                     //    HERMESVM_PROFILER_OPCODE
+                     //    HERMESVM_PROFILER_BB
+                     //  which shouldn't be defined in standard setups.
+-                    arguments("-DHERMES_ENABLE_DEBUGGER=1")
++                    arguments(
++                        "-DANDROID_STL=c++_shared",
++                        "-DHERMES_ENABLE_DEBUGGER=1"
++                    )
+                 }
+             }
+         }

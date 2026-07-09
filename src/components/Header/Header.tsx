@@ -16,6 +16,7 @@ interface HeaderProps {
   avatarInitials?: string;
   rightIcon?: string;
   onRightPress?: () => void;
+  rightComponent?: React.ReactNode;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -25,11 +26,13 @@ const Header: React.FC<HeaderProps> = ({
   avatarInitials,
   rightIcon,
   onRightPress,
+  rightComponent,
 }) => {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
   const renderRight = () => {
+    if (rightComponent) return rightComponent;
     if (avatarInitials) {
       return (
         <TouchableOpacity style={styles.avatarButton} onPress={onRightPress} activeOpacity={0.8}>
