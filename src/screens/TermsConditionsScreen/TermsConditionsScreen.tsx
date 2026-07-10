@@ -108,7 +108,6 @@ const TermsConditionsScreen: React.FC = () => {
 
   return (
     <View style={[styles.safeArea, { paddingTop: insets.top }]}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <View style={styles.container}>
         
         {/* Header */}

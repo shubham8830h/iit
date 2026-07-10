@@ -53,6 +53,12 @@ export type DrawerParamList = {
   RemedialLearning: undefined;
 };
 
+export type MainStackParamList = {
+  Drawer: undefined;
+  AllTimeQuests: undefined;
+  SparksHistory: undefined;
+};
+
 // Drawer menu item
 export interface DrawerMenuItem {
   name: keyof DrawerParamList;

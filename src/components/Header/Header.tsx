@@ -54,82 +54,101 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        onPress={onMenuPress}
-        style={styles.menuButton}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-        <Icon name="menu" size={26} color={colors.textPrimary} />
-      </TouchableOpacity>
+    <View style={styles.wrapper}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          onPress={onMenuPress}
+          style={styles.menuButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Icon name="dock-left" size={24} color="#64748B" />
+        </TouchableOpacity>
 
-      <View style={styles.titleBlock}>
-        <Text style={styles.title} numberOfLines={1}>
-          {title}
-        </Text>
-        {subtitle && (
-          <Text style={styles.subtitle} numberOfLines={1}>
-            {subtitle}
+        <View style={styles.titleBlock}>
+          <Text style={styles.title} numberOfLines={1}>
+            {title}
           </Text>
-        )}
-      </View>
+          {subtitle && (
+            <Text style={styles.subtitle} numberOfLines={1}>
+              {subtitle}
+            </Text>
+          )}
+        </View>
 
-      {renderRight()}
+        {renderRight()}
+      </View>
     </View>
   );
 };
 
 const getStyles = (colors: any) => StyleSheet.create({
+  wrapper: {
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
+  },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Spacing.base,
-    paddingVertical: Spacing.md,
+    padding: 16,
     backgroundColor: colors.backgroundWhite,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#EAEAEA',
     elevation: 2,
-    shadowColor: colors.shadow,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
   },
   menuButton: {
-    padding: Spacing.xs,
-    marginRight: Spacing.sm,
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#EAEAEA',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+    backgroundColor: colors.backgroundWhite,
   },
   titleBlock: {
     flex: 1,
+    justifyContent: 'center',
   },
   title: {
-    fontSize: FontSize.xl,
-    fontWeight: FontWeight.bold,
-    color: colors.textPrimary,
-    lineHeight: 26,
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: 0.2,
+    marginBottom: 2,
   },
   subtitle: {
-    fontSize: FontSize.sm,
+    fontSize: 13,
     color: colors.textMuted,
-    marginTop: 1,
   },
   avatarButton: {
-    width: 38,
-    height: 38,
-    borderRadius: BorderRadius.full,
-    backgroundColor: colors.primary,
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#63B1D5',
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    fontSize: FontSize.sm,
-    fontWeight: FontWeight.bold,
-    color: colors.textWhite,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
     letterSpacing: 0.5,
   },
   rightButton: {
-    padding: Spacing.xs,
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.backgroundLight,
   },
   placeholder: {
-    width: 38,
+    width: 44,
   },
 });
 

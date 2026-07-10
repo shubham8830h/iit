@@ -63,7 +63,7 @@ const LoginScreen: React.FC = () => {
     clearError();
     if (!validateForm()) { return; }
     await login(email.trim(), password);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email, password, login, clearError]);
 
   const handleForgotPassword = () => {
@@ -92,7 +92,7 @@ const LoginScreen: React.FC = () => {
 
         {/* Unified Card Container */}
         <View style={styles.cardContainer}>
-          
+
           {/* Branded Header block inside the card */}
           <View style={styles.gradientCard}>
             <Text style={styles.brandTextII}>ii</Text>
@@ -164,7 +164,7 @@ const LoginScreen: React.FC = () => {
             <View style={styles.termsContainer}>
               <Text style={styles.termsText}>
                 By continuing, you agree to our{' '}
-                <Text 
+                <Text
                   style={styles.termsLink}
                   onPress={() => navigation.navigate('TermsConditions')}
                 >
@@ -172,7 +172,7 @@ const LoginScreen: React.FC = () => {
                 </Text>
               </Text>
             </View>
-            
+
             {/* Divider */}
             <View style={styles.divider} />
 

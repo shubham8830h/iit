@@ -7,7 +7,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { useAuth } from '../store/AuthContext';
 import AuthNavigator from './AuthNavigator';
-import DrawerNavigator from './DrawerNavigator';
+import MainNavigator from './MainNavigator';
 
 import { FullScreenLoader } from '../components';
 
@@ -17,7 +17,7 @@ const AppNavigator: React.FC = () => {
   return (
     <>
       <NavigationContainer>
-        {state.isAuthenticated ? <DrawerNavigator /> : <AuthNavigator />}
+        {state.isAuthenticated ? <MainNavigator /> : <AuthNavigator />}
       </NavigationContainer>
       {state.isLoading && <FullScreenLoader />}
     </>
